@@ -15,6 +15,25 @@ import {
 } from 'react-native';
 import _ from 'lodash';
 
+import {Dimensions, PixelRatio, Platform} from 'react-native';
+
+export let screenWidth = Dimensions.get('window').width;
+export let screenHeight = Dimensions.get('window').height;
+
+export const widthPercentageToDP = (widthPercent) => {
+  const elemWidth =
+    typeof widthPercent === 'number' ? widthPercent : parseFloat(widthPercent);
+  return PixelRatio.roundToNearestPixel((screenWidth * elemWidth) / 100);
+};
+
+export const heightPercentageToDP = (heightPercent) => {
+  const elemHeight =
+    typeof heightPercent === 'number'
+      ? heightPercent
+      : parseFloat(heightPercent);
+  return PixelRatio.roundToNearestPixel((screenHeight * elemHeight) / 100);
+};
+
 export default class VideoPlayer extends Component {
 
     static defaultProps = {
@@ -64,6 +83,7 @@ export default class VideoPlayer extends Component {
             currentTime: 0,
             error: false,
             duration: 0,
+            orientation: 'portrait'
         };
 
         /**
@@ -147,7 +167,18 @@ export default class VideoPlayer extends Component {
             videoStyle: this.props.videoStyle || {},
             containerStyle: this.props.style || {}
         };
+
+        Dimensions.addEventListener('change', () => {
+            this.setState({
+              orientation: this.isPortrait() ? 'portrait' : 'landscape',
+            });
+          });
     }
+
+    isPortrait = () => {
+        const dim = Dimensions.get('screen');
+        return dim.height >= dim.width;
+      };
 
 
 
@@ -666,7 +697,7 @@ export default class VideoPlayer extends Component {
      * Before mounting, init our seekbar and volume bar
      * pan responders.
      */
-    UNSAFE_componentWillMount() {
+    componentWillMount() {
         this.initSeekPanResponder();
         this.initVolumePanResponder();
     }
@@ -675,7 +706,7 @@ export default class VideoPlayer extends Component {
      * To allow basic playback management from the outside
      * we have to handle possible props changes to state changes
      */
-    UNSAFE_componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps) {
         if (this.state.paused !== nextProps.paused ) {
             this.setState({
                 paused: nextProps.paused
@@ -898,7 +929,6 @@ export default class VideoPlayer extends Component {
 
         return this.renderControl(
             <Image
-                source={ require( './assets/img/back.png' ) }
                 style={ styles.controls.back }
             />,
             this.events.onBack,
@@ -962,6 +992,7 @@ export default class VideoPlayer extends Component {
                 {
                     opacity: this.animations.bottomControl.opacity,
                     marginBottom: this.animations.bottomControl.marginBottom,
+                    top: this.state.orientation === 'portrait' ? widthPercentageToDP(45) : Platform.OS === 'ios' ? widthPercentageToDP(100) - 65 : widthPercentageToDP(100) - 100,
                 }
             ]}>
                 <ImageBackground
@@ -1201,6 +1232,7 @@ const styles = {
             justifyContent: 'space-between',
             height: null,
             width: null,
+            marginTop: -10,
         },
         column: {
             flexDirection: 'column',
@@ -1228,13 +1260,20 @@ const styles = {
         },
         top: {
             flex: 1,
-            alignItems: 'stretch',
-            justifyContent: 'flex-start',
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
+            position: 'absolute'
         },
         bottom: {
+            position: 'absolute',
             alignItems: 'stretch',
-            flex: 2,
-            justifyContent: 'flex-end',
+            height: 100,
+            justifyContent: 'flex-start',
+            top: widthPercentageToDP(45),
+            right: 0,
+            left: 0,
         },
         topControlGroup: {
             alignSelf: 'stretch',
@@ -1262,7 +1301,9 @@ const styles = {
         playPause: {
             position: 'relative',
             width: 80,
-            zIndex: 0
+            zIndex: 0,
+            marginTop: - 15,
+            
         },
         title: {
             alignItems: 'center',
@@ -1275,6 +1316,8 @@ const styles = {
         },
         timer: {
             width: 80,
+            marginTop: - 15,
+            marginBottom: 5,
         },
         timerText: {
             backgroundColor: 'transparent',
@@ -1315,9 +1358,9 @@ const styles = {
     seekbar: StyleSheet.create({
         container: {
             alignSelf: 'stretch',
-            height: 28,
+            height: 40,
             marginLeft: 20,
-            marginRight: 20
+            marginRight: 20,
         },
         track: {
             backgroundColor: '#333',
