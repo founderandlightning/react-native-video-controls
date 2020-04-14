@@ -887,6 +887,11 @@ export default class VideoPlayer extends Component {
             <View style={[ styles.controls.control ]} />
         );
     }
+    renderNullSeekbar() {
+        return (
+            <View style={[ styles.seekbar.container ]} />
+        );
+    }
 
     /**
      * Groups the top bar controls together in an animated
@@ -983,7 +988,7 @@ export default class VideoPlayer extends Component {
     renderBottomControls() {
 
         const timerControl = this.props.disableTimer ? this.renderNullControl() : this.renderTimer();
-        const seekbarControl = this.props.disableSeekbar ? this.renderNullControl() : this.renderSeekbar();
+        const seekbarControl = this.props.disableSeekbar ? this.renderNullSeekbar() : this.renderSeekbar();
         const playPauseControl = this.props.disablePlayPause ? this.renderNullControl() : this.renderPlayPause();
 
         return(
@@ -1199,9 +1204,8 @@ const styles = {
         container: {
             backgroundColor: 'rgba( 0, 0, 0, 0.5 )',
             position: 'absolute',
-            top: 0,
+            top: 100,
             right: 0,
-            bottom: 0,
             left: 0,
             justifyContent: 'center',
             alignItems: 'center',
@@ -1217,9 +1221,8 @@ const styles = {
     loader: StyleSheet.create({
         container: {
             position: 'absolute',
-            top: 0,
+            top: 100,
             right: 0,
-            bottom: 0,
             left: 0,
             alignItems: 'center',
             justifyContent: 'center',
