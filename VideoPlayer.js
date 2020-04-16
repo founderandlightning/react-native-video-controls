@@ -1169,7 +1169,7 @@ export default class VideoPlayer extends Component {
                         source={ this.props.source }
                     />
                     { this.renderError() }
-                    { this.renderTopControls() }
+                    {/* { this.renderTopControls() } */}
                     { this.renderLoader() }
                     { this.renderBottomControls() }
                 </View>
