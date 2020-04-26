@@ -1187,7 +1187,7 @@ const styles = {
     player: StyleSheet.create({
         container: {
             backgroundColor: '#000',
-            flex: 1,
+            // flex: 1,
             alignSelf: 'stretch',
             justifyContent: 'space-between',
         },
